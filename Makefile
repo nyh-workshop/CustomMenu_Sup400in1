@@ -1,0 +1,33 @@
+CC65 = cc65
+CA65 = ca65
+LD65 = ld65
+CL65 = cl65
+NAME = menu
+CFG = nes.cfg
+
+.PHONY: default clean
+
+$menu: $(NAME).c
+	$(CC65) -Oir -Cl -t nes $(NAME).c
+	$(CC65) -Oir -Cl -t nes appList.c
+	$(CA65) $(NAME).s
+	$(CA65) crt0.s
+	$(CA65) interrupt.s
+	$(CA65) jumpToApp.s
+	$(CA65) appList.s
+	$(LD65) -C target.cfg crt0.o interrupt.o jumpToApp.o appList.o $(NAME).o nes.lib -o output.bin
+	python buildCHR.py
+	cat romdump_sup400in1_E7E0_init.bin output.bin > output_final.bin
+	cat romdump_sup400in1_E7E0_init_swapBits45.bin output.bin > output_final_swapBits45.bin
+    
+clean:
+	rm $(NAME).o
+	rm $(NAME).s
+	rm appList.s
+	rm crt0.o
+	rm interrupt.o
+	rm jumpToApp.o
+	rm appList.o
+	rm output.bin
+	rm output_final.bin
+	rm output_final_swapBits45.bin

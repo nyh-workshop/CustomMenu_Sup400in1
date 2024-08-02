@@ -1,0 +1,8 @@
+*.bin
+*.o
+
+appList.s
+menu.s
+
+# EmuVT breakpoint files and etc.
+*.ss0
