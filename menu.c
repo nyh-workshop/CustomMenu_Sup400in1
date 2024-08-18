@@ -21,7 +21,7 @@ unsigned char zRvct_L, zRvct_H;
 // Texts for menu:
 const char menuTitle[] = "SUP 400-IN-1";
 const char menuTitleHeader[] = "2020-2024 YH WORKSHOP";
-const char menuVersion[] = "0.3";
+const char menuVersion[] = "0.6";
 
 void __fastcall__ enableBacklight();
 void __fastcall__ disablePPU();
@@ -165,6 +165,11 @@ int main (void)
                 }
                 else
                 {
+                    // Wipe screen before jumping to new game:
+                    disableRender();
+                    fillBackgroundZeros();                    
+                    enableRender();
+                    
                     // Jump to application:
                     zR2012 = (menuItemProperties[menuSelect])[0];
                     zR2013 = (menuItemProperties[menuSelect])[1];
@@ -221,6 +226,7 @@ void __fastcall__ drawMenuPage(unsigned char aMenuPage)
             textToPrint = (char*)emptyTitle;
         }
         sprintf(text1, "%d. %s", menuSelect + 1, textToPrint);
+        printText(PPU_addrMenuNum, "                   ");
         printText(PPU_addrMenuNum, text1);
         PPU_addrMenuNum += 0x40;
     }
