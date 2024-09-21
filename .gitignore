@@ -6,3 +6,6 @@ menu.s
 
 # EmuVT breakpoint files and etc.
 *.ss0
+
+# Generated NES file:
+*.nes

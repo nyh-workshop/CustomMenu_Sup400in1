@@ -21,7 +21,7 @@ unsigned char zRvct_L, zRvct_H;
 // Texts for menu:
 const char menuTitle[] = "SUP 400-IN-1";
 const char menuTitleHeader[] = "2020-2024 YH WORKSHOP";
-const char menuVersion[] = "0.6";
+const char menuVersion[] = "0.8";
 
 void __fastcall__ enableBacklight();
 void __fastcall__ disablePPU();

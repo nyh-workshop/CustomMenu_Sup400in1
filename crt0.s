@@ -22,7 +22,7 @@ _init:
         lda #$40
         sta $4017
         lda #$00
-        sta $4010
+        sta $4010  
         
         clear_ZP_RAM:    
             tax

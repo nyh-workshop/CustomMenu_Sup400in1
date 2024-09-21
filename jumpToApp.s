@@ -9,6 +9,44 @@
 .PC02 ; Force 65C02 assembly mode
 
 _jumpToApp:
+
+    lda #$00
+    sta $a000
+    lda #$00
+    sta $e000
+    
+_ppu_reset:
+    lda #$00
+    sta $2000
+    sta $2001
+@l0:lda $2002
+    bmi @l0
+@l1:lda $2002
+    bpl @l1
+    
+_mmc3_init:
+    lda #$00
+    nop
+    asl a
+    asl a
+    asl a
+    ldx #$00
+@l0:stx $8000
+    sta $8001
+    clc
+    adc #$02
+    inx
+    cpx #$02
+    bne @l0
+    clc
+    ldx #$02
+@l1:stx $8000
+    sta $8001
+    adc #$01
+    inx
+    cpx #$06
+    bne @l1
+    
     lda _zR2012
     sta $2012
     lda _zR2013
@@ -38,6 +76,10 @@ _jumpToApp:
                 
                 
 jumpToProgramInRAM:
+    lda _zR410A
+    sta $410A
+    lda _zR410B
+    sta $410B
     lda _zR4100
     sta $4100
     lda _zR4105
@@ -50,10 +92,9 @@ jumpToProgramInRAM:
     sta $4108
     lda _zR4109
     sta $4109
-    lda _zR410A
-    sta $410A
-    lda _zR410B
-    sta $410B
+
+    ;lda #$80
+    ;sta $4118
     
     ; _zRvct_L and _zRvct_H for reset vector:
     jmp (_zRvct_L)
