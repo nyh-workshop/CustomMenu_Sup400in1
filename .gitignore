@@ -1,11 +1,20 @@
 *.bin
 *.o
 
+# NES header for FCEUX emulation - do not ignore!: 
+!nes_header/*.bin
+
+# ROM dump binaries: 
+romdump_init/*.bin
+
 appList.s
 menu.s
 
-# EmuVT breakpoint files and etc.
+# EmuVT or other emulator breakpoint files and etc.
 *.ss0
+*.bak
+*.deb
+*.cdl
 
 # Generated NES file:
 *.nes

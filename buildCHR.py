@@ -1,4 +1,4 @@
-with open("chicago_oblique_basic.chr", 'rb') as F0:
+with open("fonts/chicago_oblique_basic.chr", 'rb') as F0:
     contents_CHR = F0.read()
     F0.close()
 

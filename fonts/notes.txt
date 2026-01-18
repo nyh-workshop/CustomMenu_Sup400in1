@@ -1,0 +1,2 @@
+Chicago fonts are from Tepples: https://forums.nesdev.org/viewtopic.php?t=10284&start=30
+Power Pak fonts are from: https://github.com/mist-devel/nes/blob/master/powerpak_nsf/font.chr

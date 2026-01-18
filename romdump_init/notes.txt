@@ -1,0 +1,4 @@
+Get the actual ROM dumps from your Sup 400-in-1 handheld.
+This folder should have the init files:
+1.) One is for the bits-swapped to run in emulator. (Example: romdump_sup400in1_E7E0_init.bin)
+2.) Another is for the original un-bits-swapped to run on actual unit. (Example: romdump_sup400in1_E7E0_init_swapBits45.bin)
