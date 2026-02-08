@@ -20,8 +20,8 @@ unsigned char zRvct_L, zRvct_H;
 
 // Texts for menu:
 const char menuTitle[] = "SUP 400-IN-1";
-const char menuTitleHeader[] = "2020-2024 YH WORKSHOP";
-const char menuVersion[] = "0.8";
+const char menuTitleHeader[] = "2020-2026 YH WORKSHOP";
+const char menuVersion[] = "0.9";
 
 void __fastcall__ enableBacklight();
 void __fastcall__ disablePPU();
@@ -36,7 +36,7 @@ void __fastcall__ disableRender();
 void __fastcall__ enableRender();
 void __fastcall__ drawMenuPage(unsigned char aMenuPage);
 
-const char numberOfPages = 2;
+const char numberOfPages = 8;
 signed char menuPage = 0;
 unsigned char menuSelectItem10 = 0;
 unsigned int menuSelect = 0;
@@ -47,13 +47,14 @@ const unsigned int totalNumOfApps = sizeof(appTitleList)/2;
 unsigned char manual_NMI = 0;
 unsigned char button1PressEvt = 0;
 
+// Can select fonts: check in the fonts folder!
 const unsigned char menuPaletteData[] =
 {
     // Background:
-    0x0e,0x0e,0x2a,0x0e,
-    0x0e,0x0e,0x2a,0x0e,
-    0x0e,0x0e,0x2a,0x0e,
-    0x0e,0x0e,0x2a,0x0e,
+    0x0e,0x2c,0x0e,0x0e,
+    0x0e,0x2c,0x0e,0x0e,
+    0x0e,0x2c,0x0e,0x0e,
+    0x0e,0x2c,0x0e,0x0e,
     // Sprite:
     0x0e,0x0e,0x2a,0x0e,
     0x0e,0x0e,0x2a,0x0e,

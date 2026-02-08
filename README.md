@@ -11,10 +11,23 @@ Requires ROM dump from the actual handheld.
 Please read the [article](https://nyh-workshop.github.io/Custom-ROM-Sup-Game-Box-400in1/) to understand how to dump the ROM, and to modify it before attempting this one.
 
 ## Requirements:
-
+- ROM dump from the actual handheld.
 - CC65 - latest version will do.
 - Visual Studio 2022 with C#.
 - [OneBusCalc](https://github.com/nyh-workshop/OneBusCalc) and [Menu Builder](https://github.com/nyh-workshop/MenuBuilder_SupGameBox) app to help you build the compilation.
+
+## Automatic Compilation (Recommended):
+
+1. Dump the ROM and have identified the bitswaps etc.
+2. Keep the original ROM (such as `S29GL128P10TFI01_romdump_sup400in1_DDMMYY.bin` for example).
+3. Make another copy, and rip out the first 512K (0x00000-0x7FFFF) bytes. 
+4. Do the necessary bitswaps on the data and opcodes. Once this is figured out, you need to create an bitswapped->original patch using [Floating IPS Patcher](https://github.com/Alcaro/Flips), and put this into the `patch` folder.
+```
+Note: This repository does not have the Floating IPS Patcher! Manually download it and place it inside the main folder.
+```
+5. Using the emulator, make sure it can run first. If so, name that ripped ROM `S29GL128P10TFI01_romdump_sup400in1_DDMMYY_init_emulator.bin` and put it inside the `romdump_init` folder.
+6. In the Makefile, put the name such as `S29GL128P10TFI01_romdump_sup400in1_DDMMYY` into the `ROMDUMP_INIT_TITLE`. Select the `ROM_TYPE` too. Currently it only support two kinds of bitswapping, so you may need to add this one yourself if it is not listed here.
+7. You can use the latest version of the [Menu Builder](https://github.com/nyh-workshop/MenuBuilder_SupGameBox) and follow the instructions there.
 
 ## Preliminary setup:
 

@@ -64,6 +64,17 @@ _mmc3_init:
     lda _zR201A
     sta $201A
 
+    ; This sequence is to help locate where is it in the file.
+    ; EA EA EA EA EA EA EA EA A2 30
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    
     ; Bank switches at $410x can only be done in RAM.
     ; Copy these into $400 and run it from there:
     

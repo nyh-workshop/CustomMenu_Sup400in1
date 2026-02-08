@@ -7,6 +7,12 @@
 # ROM dump binaries: 
 romdump_init/*.bin
 
+# Output ROM for handheld:
+output_rom_handheld/*.bin
+
+# Patch IPS:
+patch/*.ips
+
 appList.s
 menu.s
 
@@ -18,3 +24,6 @@ menu.s
 
 # Generated NES file:
 *.nes
+
+# Floating IPS executable:
+flips.exe

@@ -1,4 +1,11 @@
-with open("fonts/chicago_oblique_basic.chr", 'rb') as F0:
+import argparse
+
+parser = argparse.ArgumentParser(description='Add font into the ROM for the custom SUP 400-in-1 Menu.')
+parser.add_argument('file_path', type=str, help='CHR file')
+
+args = parser.parse_args()
+
+with open(args.file_path, 'rb') as F0:
     contents_CHR = F0.read()
     F0.close()
 

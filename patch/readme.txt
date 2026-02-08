@@ -1,0 +1,1 @@
+Patches contain opcode bit swaps and patching out calling other functions that the emulator does not work with it.
