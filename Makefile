@@ -13,13 +13,19 @@ ROOT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 # Known ROM types:
 # 1. SWAP_DATA_BITS_4_TO_5
 # 2. SWAP_DATA_BITS_9_A_TO_0_1__SWAP_OPCODE_BITS_0_TO_1__STARTUP_CUSTOM_ADDR
-#
+# 3. NO_SWAP_DATA_BITS_01
 
-ROM_TYPE = SWAP_DATA_BITS_9_A_TO_0_1__SWAP_OPCODE_BITS_0_TO_1__STARTUP_CUSTOM_ADDR
+# ROM_TYPE = SWAP_DATA_BITS_9_A_TO_0_1__SWAP_OPCODE_BITS_0_TO_1__STARTUP_CUSTOM_ADDR
+ROM_TYPE = NO_SWAP_DATA_BITS_01
 
-ROMDUMP_INIT_TITLE = S29GL128P10TFI01_romdump_sup400in1_09082024
-ROMDUMP_INIT_EMULATOR_BIN = $(ROMDUMP_INIT_TITLE)_init_emulator.bin
-ROMDUMP_INIT_ORIGINAL_BIN = $(ROMDUMP_INIT_TITLE)_init_original.bin
+# ROMDUMP_INIT_TITLE = S29GL128P10TFI01_romdump_sup400in1_09082024
+# ROMDUMP_INIT_EMULATOR_BIN = $(ROMDUMP_INIT_TITLE)_init_emulator_6E000.bin
+# ROMDUMP_INIT_ORIGINAL_BIN = $(ROMDUMP_INIT_TITLE)_init_original_6E000.bin
+
+ROMDUMP_INIT_TITLE = S29GL256P90TFCR2_sup400in1_VS_init
+ROMDUMP_INIT_EMULATOR_BIN = $(ROMDUMP_INIT_TITLE).bin
+ROMDUMP_INIT_ORIGINAL_BIN = $(ROMDUMP_INIT_EMULATOR_BIN)
+
 ROM_HANDHELD_OUTPUT_FOLDER = output_rom_handheld
 
 NESHEADERFOLDER = nes_header
@@ -30,7 +36,7 @@ ROMDUMPFOLDER = romdump_init
 all: $menu compile_to_handheld_rom
 
 $menu: $(NAME).c
-	$(CC65) -Oir -Cl -t nes $(NAME).c
+	$(CC65) -Oir -Cl -t nes $(NAME).c -D$(ROM_TYPE) 
 	$(CC65) -Oir -Cl -t nes appList.c
 	$(CA65) $(NAME).s
 	$(CA65) crt0.s
@@ -47,14 +53,21 @@ $menu: $(NAME).c
 
 compile_to_handheld_rom:
 	@echo "Compiling to Handheld ROM!"
-ifeq ($(ROM_TYPE), SWAP_DATA_BITS_4_TO_5)
+
+ifeq ($(ROM_TYPE), NO_SWAP_DATA_BITS_01)
+	cat $(ROMDUMPFOLDER)/$(ROMDUMP_INIT_ORIGINAL_BIN) output.bin apps.bin > $(ROM_HANDHELD_OUTPUT_FOLDER)/output_final_handheld.bin
+	
+else ifeq ($(ROM_TYPE), SWAP_DATA_BITS_4_TO_5)
 	cat $(ROMDUMPFOLDER)/$(ROMDUMP_INIT_ORIGINAL_BIN) output.bin apps.bin > output_final_swapBits45.bin
 
 else ifeq ($(ROM_TYPE), SWAP_DATA_BITS_9_A_TO_0_1__SWAP_OPCODE_BITS_0_TO_1__STARTUP_CUSTOM_ADDR)
-	$(ROOT_DIR)flips.exe --apply patch/$(ROMDUMP_INIT_TITLE)_init_convert_to_original.bps romdump_init/$(ROMDUMP_INIT_EMULATOR_BIN) $(ROM_HANDHELD_OUTPUT_FOLDER)/$(ROMDUMP_INIT_TITLE)_init_original.bin
-	cat $(ROM_HANDHELD_OUTPUT_FOLDER)/$(ROMDUMP_INIT_ORIGINAL_BIN) output.bin apps.bin > $(ROM_HANDHELD_OUTPUT_FOLDER)/$(ROMDUMP_INIT_TITLE)_recompile.bin
+	# Combine emulator output first: Menu + Apps.
+	cat output.bin apps.bin > user.bin
+	# Then do the bit-swaps back to the original.
+	python sup_game_box_swap_bits.py user.bin O SWAP_DATA_BITS_9A_TO_12
+	# With the original bin (modified to jump to 0x88000) with swapped data and opcode bits, combine them finally:
+	cat $(ROMDUMPFOLDER)/$(ROMDUMP_INIT_ORIGINAL_BIN) $(ROM_HANDHELD_OUTPUT_FOLDER)/user_O.bin > $(ROM_HANDHELD_OUTPUT_FOLDER)/output_final_handheld.bin
 	
-	python sup_game_box_swap_bits.py $(ROM_HANDHELD_OUTPUT_FOLDER)/$(ROMDUMP_INIT_TITLE)_recompile.bin O SWAP_DATA_BITS_9A_TO_12
 endif
 @echo "Done compiling to Handheld ROM! :D"
 

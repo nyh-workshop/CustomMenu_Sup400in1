@@ -43,4 +43,3 @@ else:
     print("Bit swaps successful! :D")
     
 print(f"Created new bin file: {new_bin_file_path}")
-print(f"Load the flash with the bin file with the O suffix! Example: ROMdump_O.bin")

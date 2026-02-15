@@ -5,6 +5,7 @@
 #include "oneBus.h"
 #include "jumpToApp.h"
 #include "appList.h"
+#include "handheld.h"
 
 #define RIGHT_ARROW_TILE 0x5B
 #define ARROW_START_PPUADDR 0x20C4
@@ -21,7 +22,7 @@ unsigned char zRvct_L, zRvct_H;
 // Texts for menu:
 const char menuTitle[] = "SUP 400-IN-1";
 const char menuTitleHeader[] = "2020-2026 YH WORKSHOP";
-const char menuVersion[] = "0.9";
+const char menuVersion[] = "1.0";
 
 void __fastcall__ enableBacklight();
 void __fastcall__ disablePPU();
@@ -46,15 +47,16 @@ const unsigned int totalNumOfApps = sizeof(appTitleList)/2;
 
 unsigned char manual_NMI = 0;
 unsigned char button1PressEvt = 0;
+unsigned char isAboutScreen = 0;
 
 // Can select fonts: check in the fonts folder!
 const unsigned char menuPaletteData[] =
 {
     // Background:
-    0x0e,0x2c,0x0e,0x0e,
-    0x0e,0x2c,0x0e,0x0e,
-    0x0e,0x2c,0x0e,0x0e,
-    0x0e,0x2c,0x0e,0x0e,
+    0x0e,0x3c,0x0e,0x0e,
+    0x0e,0x3c,0x0e,0x0e,
+    0x0e,0x3c,0x0e,0x0e,
+    0x0e,0x3c,0x0e,0x0e,
     // Sprite:
     0x0e,0x0e,0x2a,0x0e,
     0x0e,0x0e,0x2a,0x0e,
@@ -84,116 +86,156 @@ int main (void)
     {
         if(button1PressEvt)
         {
-            // Down button:
-            if(button1 == 0x04)
+            if(!isAboutScreen)
             {
-                disableRender();
-                placeTile(menuArrowPositionPPUaddr, ' ');
-                menuArrowPositionPPUaddr += 0x40;
-                ++menuSelectItem10;
-                                
-                if(menuArrowPositionPPUaddr > ARROW_END_PPUADDR)
+                // Down button:
+                if(button1 == 0x04)
                 {
-                    // Go to next page!
+                    disableRender();
                     placeTile(menuArrowPositionPPUaddr, ' ');
-                    menuArrowPositionPPUaddr = ARROW_START_PPUADDR;
-                    menuSelectItem10 = 0;
+                    menuArrowPositionPPUaddr += 0x40;
+                    ++menuSelectItem10;
+                                    
+                    if(menuArrowPositionPPUaddr > ARROW_END_PPUADDR)
+                    {
+                        // Go to next page!
+                        placeTile(menuArrowPositionPPUaddr, ' ');
+                        menuArrowPositionPPUaddr = ARROW_START_PPUADDR;
+                        menuSelectItem10 = 0;
+                        ++menuPage;
+                        if(menuPage > numberOfPages)
+                            menuPage = 0;
+                        drawMenuPage(menuPage);
+                    }
+                    menuSelect = (menuPage * 10) + menuSelectItem10;
+                    placeTile(menuArrowPositionPPUaddr, RIGHT_ARROW_TILE);
+                    enableRender();
+                    button1PressEvt = 0;
+                    
+                }
+                // Up button:
+                else if(button1 == 0x08)
+                {
+                    disableRender();
+                    placeTile(menuArrowPositionPPUaddr, ' ');
+                    menuArrowPositionPPUaddr -= 0x40;
+                    --menuSelectItem10;
+                    
+                    if(menuArrowPositionPPUaddr < ARROW_START_PPUADDR)
+                    {
+                        // Go to previous page!
+                        placeTile(ARROW_START_PPUADDR, ' ');
+                        menuArrowPositionPPUaddr = ARROW_END_PPUADDR;
+                        menuSelectItem10 = 9;
+                        --menuPage;
+                        if(menuPage < 0)
+                            menuPage = numberOfPages;
+                        drawMenuPage(menuPage);
+                    }
+                    menuSelect = (menuPage * 10) + menuSelectItem10;
+                    placeTile(menuArrowPositionPPUaddr, RIGHT_ARROW_TILE);
+                    enableRender();
+                    button1PressEvt = 0;
+                }
+                // Right button:
+                else if(button1 == 0x01)
+                {
+                    disableRender();
                     ++menuPage;
                     if(menuPage > numberOfPages)
                         menuPage = 0;
                     drawMenuPage(menuPage);
+                    menuSelect = (menuPage * 10) + menuSelectItem10;
+                    enableRender();
+                    button1PressEvt = 0;
                 }
-                menuSelect = (menuPage * 10) + menuSelectItem10;
-                placeTile(menuArrowPositionPPUaddr, RIGHT_ARROW_TILE);
-                enableRender();
-                button1PressEvt = 0;
-                
-            }
-            // Up button:
-            else if(button1 == 0x08)
-            {
-                disableRender();
-                placeTile(menuArrowPositionPPUaddr, ' ');
-                menuArrowPositionPPUaddr -= 0x40;
-                --menuSelectItem10;
-                
-                if(menuArrowPositionPPUaddr < ARROW_START_PPUADDR)
+                // Left button:
+                else if(button1 == 0x02)
                 {
-                    // Go to previous page!
-                    placeTile(ARROW_START_PPUADDR, ' ');
-                    menuArrowPositionPPUaddr = ARROW_END_PPUADDR;
-                    menuSelectItem10 = 9;
+                    disableRender();
                     --menuPage;
                     if(menuPage < 0)
                         menuPage = numberOfPages;
                     drawMenuPage(menuPage);
+                    menuSelect = (menuPage * 10) + menuSelectItem10;
+                    enableRender();
+                    button1PressEvt = 0;
                 }
-                menuSelect = (menuPage * 10) + menuSelectItem10;
-                placeTile(menuArrowPositionPPUaddr, RIGHT_ARROW_TILE);
-                enableRender();
-                button1PressEvt = 0;
-            }
-            // Right button:
-            else if(button1 == 0x01)
-            {
-                disableRender();
-                ++menuPage;
-                if(menuPage > numberOfPages)
-                    menuPage = 0;
-                drawMenuPage(menuPage);
-                menuSelect = (menuPage * 10) + menuSelectItem10;
-                enableRender();
-                button1PressEvt = 0;
-            }
-            // Left button:
-            else if(button1 == 0x02)
-            {
-                disableRender();
-                --menuPage;
-                if(menuPage < 0)
-                    menuPage = numberOfPages;
-                drawMenuPage(menuPage);
-                menuSelect = (menuPage * 10) + menuSelectItem10;
-                enableRender();
-                button1PressEvt = 0;
-            }
-            // Start button:
-            else if(button1 == 0x10)
-            {
-                if(menuSelect > (totalNumOfApps - 1))
+                // Start button:
+                else if(button1 == 0x10)
                 {
-                    continue;
+                    if(menuSelect > (totalNumOfApps - 1))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        // Wipe screen before jumping to new game:
+                        disableRender();
+                        fillBackgroundZeros();                    
+                        enableRender();
+                        
+                        // Jump to application:
+                        zR2012 = (menuItemProperties[menuSelect])[0];
+                        zR2013 = (menuItemProperties[menuSelect])[1];
+                        zR2014 = (menuItemProperties[menuSelect])[2];
+                        zR2015 = (menuItemProperties[menuSelect])[3];
+                        zR2016 = (menuItemProperties[menuSelect])[4];
+                        zR2017 = (menuItemProperties[menuSelect])[5];
+                        zR2018 = (menuItemProperties[menuSelect])[6];
+                        zR201A = (menuItemProperties[menuSelect])[7];
+                        
+                        zR4100 = (menuItemProperties[menuSelect])[8];
+                        zR4105 = (menuItemProperties[menuSelect])[9];
+                        zR4106 = (menuItemProperties[menuSelect])[10];
+                        zR4107 = (menuItemProperties[menuSelect])[11];
+                        zR4108 = (menuItemProperties[menuSelect])[12];
+                        zR4109 = (menuItemProperties[menuSelect])[13];
+                        zR410A = (menuItemProperties[menuSelect])[14];
+                        zR410B = (menuItemProperties[menuSelect])[15];
+                        
+                        zRvct_L = (resetVectors[menuSelect])[0];
+                        zRvct_H = (resetVectors[menuSelect])[1];
+                        
+                        jumpToApp();
+                    }
                 }
-                else
+                // Select button:
+                else if(button1 == 0x20)
                 {
-                    // Wipe screen before jumping to new game:
+                    // Wipe screen before jumping to the about screen:
                     disableRender();
                     fillBackgroundZeros();                    
+                    
+                    sprintf(text1, "ABOUT HANDHELD");
+                    printText(0x204A, text1);
+                    
+                    sprintf(text1, "MODEL:");
+                    printText(0x20C2, text1);
+                    sprintf(text1, handheldModel);
+                    printText(0x20C9, text1);
+                    
+                    sprintf(text1, "FLASH MEM:");
+                    printText(0x2102, text1);
+                    sprintf(text1, memoryChipModel);
+                    printText(0x210D, text1);                    
+                    
+                    sprintf(text1, "DATA BITSWAP:");
+                    printText(0x2142, text1);
+                    sprintf(text1, dataBitswap);
+                    printText(0x2150, text1);
+                    
+                    sprintf(text1, "OPCODE BITSWAP:");
+                    printText(0x2182, text1);
+                    sprintf(text1, opcodeBitswap);
+                    printText(0x2192, text1);
+                    
+                    sprintf(text1, "PRESS RESET TO RETURN TO MENU");
+                    printText(0x2201, text1);
+                    
                     enableRender();
-                    
-                    // Jump to application:
-                    zR2012 = (menuItemProperties[menuSelect])[0];
-                    zR2013 = (menuItemProperties[menuSelect])[1];
-                    zR2014 = (menuItemProperties[menuSelect])[2];
-                    zR2015 = (menuItemProperties[menuSelect])[3];
-                    zR2016 = (menuItemProperties[menuSelect])[4];
-                    zR2017 = (menuItemProperties[menuSelect])[5];
-                    zR2018 = (menuItemProperties[menuSelect])[6];
-                    zR201A = (menuItemProperties[menuSelect])[7];
-                    
-                    zR4100 = (menuItemProperties[menuSelect])[8];
-                    zR4105 = (menuItemProperties[menuSelect])[9];
-                    zR4106 = (menuItemProperties[menuSelect])[10];
-                    zR4107 = (menuItemProperties[menuSelect])[11];
-                    zR4108 = (menuItemProperties[menuSelect])[12];
-                    zR4109 = (menuItemProperties[menuSelect])[13];
-                    zR410A = (menuItemProperties[menuSelect])[14];
-                    zR410B = (menuItemProperties[menuSelect])[15];
-                    
-                    zRvct_L = (resetVectors[menuSelect])[0];
-                    zRvct_H = (resetVectors[menuSelect])[1];
-                    
-                    jumpToApp();
+                    button1PressEvt = 0;
+                    isAboutScreen = 1;
                 }
             }
         }
@@ -239,9 +281,14 @@ void __fastcall__ drawMenuPage(unsigned char aMenuPage)
 
 void __fastcall__ enableBacklight()
 {
+    #ifdef BACKLIGHT_412B_C
+    R412B = 0xFF;
+    R412C = 0x00;
+    #elif BACKLIGHT_4138_9_F
     R413F = 0x1F;
     R4138 = 0x0B;
     R4139 = 0x0F;
+    #endif
 }
 
 void __fastcall__ initPPU()

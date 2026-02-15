@@ -20,6 +20,8 @@
 #define R201A *((unsigned char*)0x201A)
 
 // Additional registers:
+#define R412B *((unsigned char*)0x412B)
+#define R412C *((unsigned char*)0x412C)
 #define R4138 *((unsigned char*)0x4138)
 #define R4139 *((unsigned char*)0x4139)
 #define R413F *((unsigned char*)0x413F)
