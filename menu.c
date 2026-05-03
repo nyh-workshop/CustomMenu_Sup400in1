@@ -10,6 +10,7 @@
 #define RIGHT_ARROW_TILE 0x5B
 #define ARROW_START_PPUADDR 0x20C4
 #define ARROW_END_PPUADDR 0x2304
+#define PPU_TILE_NEWLINE 0x40
 
 #pragma bss-name (push,"ZEROPAGE")
 #pragma data-name (push,"ZEROPAGE")
@@ -20,7 +21,11 @@ unsigned char zRvct_L, zRvct_H;
 #pragma bss-name (pop)
 
 // Texts for menu:
+#if defined(G5_NO_SWAP_DATA_BITS_SWAP_OPCODE_BITS_6_7_1_2)
+const char menuTitle[] = "G5 500-IN-1";
+#else
 const char menuTitle[] = "SUP 400-IN-1";
+#endif
 const char menuTitleHeader[] = "2020-2026 YH WORKSHOP";
 const char menuVersion[] = "1.0";
 
@@ -271,23 +276,29 @@ void __fastcall__ drawMenuPage(unsigned char aMenuPage)
         sprintf(text1, "%d. %s", menuSelect + 1, textToPrint);
         printText(PPU_addrMenuNum, "                   ");
         printText(PPU_addrMenuNum, text1);
-        PPU_addrMenuNum += 0x40;
+        PPU_addrMenuNum += PPU_TILE_NEWLINE;
     }
 
     sprintf(text1, menuVersion);
     printText(0x23BD, text1);
 }
 
-
 void __fastcall__ enableBacklight()
 {
     #ifdef BACKLIGHT_412B_C
     R412B = 0xFF;
     R412C = 0x00;
-    #elif BACKLIGHT_4138_9_F
+    #elif defined(BACKLIGHT_4138_9_F)
     R413F = 0x1F;
     R4138 = 0x0B;
     R4139 = 0x0F;
+    #elif defined(BACKLIGHT_4138_9_F_G5)
+    // Seems to be turning on the backlight + screen??
+    unsigned char i = 0;
+    i = R4139;
+    i = i | 0x02;
+    R4139 = i;
+    R413F = 0x1F;
     #endif
 }
 
