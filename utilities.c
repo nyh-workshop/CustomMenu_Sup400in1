@@ -9,14 +9,17 @@ void __fastcall__ enableBacklight()
     R413F = 0x1F;
     R4138 = 0x0B;
     R4139 = 0x0F;
-    #elif defined(BACKLIGHT_4138_9_F_G5)
+    #endif
+}
+
+void __fastcall__ enableBacklight_G5()
+{
     // Seems to be turning on the backlight + screen??
     unsigned char i = 0;
     i = R4139;
     i = i | 0x02;
     R4139 = i;
     R413F = 0x1F;
-    #endif
 }
 
 void __fastcall__ initPPU()

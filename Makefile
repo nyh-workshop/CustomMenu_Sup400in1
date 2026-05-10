@@ -37,15 +37,17 @@ ROMDUMPFOLDER = romdump_init
 all: $menu compile_to_handheld_rom
 
 $menu: $(NAME).c
-	$(CC65) -Oir -Cl -t nes $(NAME).c -D$(ROM_TYPE) 
+	$(CC65) -Oir -Cl -t nes $(NAME).c -D$(ROM_TYPE)
 	$(CC65) -Oir -Cl -t nes appList.c
-	$(CC65) -Oir -Cl -t nes utilities.c
+	$(CC65) -Oir -Cl -t nes utilities.c -D$(ROM_TYPE)
 	$(CC65) -Oir -Cl -t nes debugging.c
+	$(CC65) -Oir -Cl -t nes handheld.c -D$(ROM_TYPE)
 	$(CA65) $(NAME).s
 	$(CA65) utilities.s
 	$(CA65) debugging.s
 	$(CA65) crt0.s
 	$(CA65) interrupt.s
+	$(CA65) handheld.s
 ifeq ($(ROM_TYPE), G5_NO_SWAP_DATA_BITS_SWAP_OPCODE_BITS_6_7_1_2)
 	$(CA65) jumpToApp_G5.s
 else
@@ -53,9 +55,9 @@ else
 endif
 	$(CA65) appList.s
 ifeq ($(ROM_TYPE), G5_NO_SWAP_DATA_BITS_SWAP_OPCODE_BITS_6_7_1_2)
-	$(LD65) -C target.cfg crt0.o interrupt.o jumpToApp_G5.o appList.o $(NAME).o utilities.o debugging.o nes.lib -o output.bin
+	$(LD65) -C target.cfg crt0.o interrupt.o jumpToApp_G5.o appList.o $(NAME).o utilities.o debugging.o handheld.o nes.lib -o output.bin
 else
-	$(LD65) -C target.cfg crt0.o interrupt.o jumpToApp.o appList.o $(NAME).o utilities.o debugging.o nes.lib -o output.bin
+	$(LD65) -C target.cfg crt0.o interrupt.o jumpToApp.o appList.o $(NAME).o utilities.o debugging.o handheld.o nes.lib -o output.bin
 endif
 
 	python buildCHR.py "fonts/powerpak_font.chr"
@@ -106,3 +108,5 @@ clean:
 	rm debugging.s
 	rm utilities.o
 	rm utilities.s
+	rm handheld.o
+	rm handheld.s

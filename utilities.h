@@ -6,10 +6,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "oneBus.h"
+#include "handheld.h"
 
 // Inspired by https://github.com/alavifazel/utilities.h.
 void __fastcall__ enableBacklight();
-void __fastcall__ enableBacklight();
+void __fastcall__ enableBacklight_G5();
 void __fastcall__ disablePPU();
 void __fastcall__ initPPU();
 void __fastcall__ initPPU_OneBus();

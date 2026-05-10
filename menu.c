@@ -2,7 +2,6 @@
 #include "jumpToApp.h"
 #include "appList.h"
 #include "menu.h"
-#include "handheld.h"
 #include "utilities.h"
 #include "debugging.h"
 
@@ -60,7 +59,11 @@ int main (void)
     waitvsync();
     waitvsync();
     waitvsync();
+    #if defined(G5_NO_SWAP_DATA_BITS_SWAP_OPCODE_BITS_6_7_1_2)
+    enableBacklight_G5();
+    #else
     enableBacklight();
+    #endif
     initPPU_OneBus();
   
     disablePPU();
