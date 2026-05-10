@@ -13,8 +13,11 @@ output_rom_handheld/*.bin
 # Patch IPS:
 patch/*.ips
 
+# generated source files:
 appList.s
+debugging.s
 menu.s
+utilities.s
 
 # EmuVT or other emulator breakpoint files and etc.
 *.ss0
@@ -27,3 +30,7 @@ menu.s
 
 # Floating IPS executable:
 flips.exe
+
+# App lists - they should not be inside!
+appList.c
+appList.h

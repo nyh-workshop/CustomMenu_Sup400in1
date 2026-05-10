@@ -8,6 +8,9 @@
 
 .PC02 ; Force 65C02 assembly mode
 
+; This is to help locate the part of the code easily in hex editors.
+.asciiz "jumpToApp"
+
 _jumpToApp:
 
     lda #$00
