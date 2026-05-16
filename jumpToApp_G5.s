@@ -2,6 +2,7 @@
 
     .importzp _zR2012, _zR2013, _zR2014, _zR2015, _zR2016, _zR2017, _zR2018, _zR201A
     .importzp _zR4100, _zR4105, _zR4106, _zR4107, _zR4108, _zR4109, _zR410A, _zR410B
+    .importzp _zR4118
     .importzp _zRvct_L,_zRvct_H;
 
 .segment "CODE"
@@ -12,6 +13,11 @@
 .asciiz "jumpToApp"
 
 _jumpToApp:
+    lda #$00
+    sta $2000
+    sta $2001
+    sta $e000
+    sta $4015
 
     lda #$00
     sta $a000
@@ -68,90 +74,19 @@ _mmc3_init:
     sta $201A
 
     ; Bank switches at $410x can only be done in RAM.
-    ; Copy these into $400 and run it from there:
+    ; Copy these into $0400 and run it from there:
     
-                ldx #$60
+                ldx #$80
 @cpyToRAM_Loop: lda jumpToProgramInRAM,X
-                sta $0300,X
+                sta $0400,X
                 dex
                 bpl @cpyToRAM_Loop
-                jmp $0300
+                jmp $0400
 
-_mmc3_init_0:
-    sta $0401
-    txa
-    pha
-    ldx #$00
-    stx $8000
-    lda $0401
-    sta $8001
-    inx
-    stx $8000
-    clc
-    adc #$02
-    sta $8001
-    pla
-    tax
-    rts
-
-_mmc3_init_1:
-    sta $0401
-    txa
-    pha
-    ldx #$02
-    stx $8000
-    lda $0401
-    sta $8001
-    inx
-    stx $8000
-    clc
-    adc #$01
-    sta $8001
-    inx
-    stx $8000
-    adc #$01
-    sta $8001
-    inx
-    stx $8000
-    adc #$01
-    sta $8001
-    pla
-    tax
-    rts
-                
 jumpToProgramInRAM:
 
-    ;lda _zR4105
-    ;sta $4105
-
-    ; lda #$00
-    ; jsr _mmc3_init_0
-    ; lda #$04
-    ; jsr _mmc3_init_1
-
-    ; lda _zR4100
-    ; sta $4100
-    ; lda _zR2018
-    ; sta $2018
-    ; lda _zR201A
-    ; sta $201A
-    ; lda #$30
-    ; sta $2018
-    ; lda #$81
-    ; sta $201A
-    ; lda _zR4106
-    ; sta $A000
-    
-    ; lda _zR410B
-    ; sta $410B
-    ; lda _zR4107
-    ; sta $4107
-    ; lda _zR4108
-    ; sta $4108
-    ; lda _zR4109
-    ; sta $4109
-    ; lda _zR201A
-    ; sta $201A
+    lda _zR4118
+    sta $4118 ; That's the magic register for the CHR-RAM exclusive games!!
 
     lda _zR410A
     sta $410A

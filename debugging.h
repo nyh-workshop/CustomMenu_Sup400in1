@@ -10,5 +10,6 @@
 void __fastcall__ jumpToApp_Debug_Save_Register(unsigned char select_byte);
 void __fastcall__ jumpToApp_Debug_Refresh_Registers();
 void __fastcall__ jumpToApp_Debug();
+void __fastcall__ chrram_test();
 
 #endif

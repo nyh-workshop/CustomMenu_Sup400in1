@@ -34,6 +34,8 @@ extern unsigned char zR410A;
 #pragma zpsym ("zR410A");
 extern unsigned char zR410B;
 #pragma zpsym ("zR410B");
+extern unsigned char zR4118;
+#pragma zpsym ("zR4118");
 
 extern char text1[64];
 extern unsigned char button1;
@@ -116,6 +118,8 @@ void __fastcall__ jumpToApp_Debug_Refresh_Registers()
     printText(0x2212, text1);
     sprintf(text1, "R410B: ");
     printText(0x2252, text1);
+    sprintf(text1, "*R4118: "); // Asterisk indicates a CHR-RAM game!
+    printText(0x2292-1, text1);
 
     // R40XX's values:
     sprintf(text1, "%02X", zR4100);
@@ -134,6 +138,8 @@ void __fastcall__ jumpToApp_Debug_Refresh_Registers()
     printText(0x2212 + 7, text1);
     sprintf(text1, "%02X", zR410B);
     printText(0x2252 + 7, text1);
+    sprintf(text1, "%02X", zR4118);
+    printText(0x2292 + 7, text1);
 }
 
 void __fastcall__ jumpToApp_Debug_Save_Register(unsigned char select_byte)

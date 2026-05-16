@@ -9,6 +9,7 @@
 #pragma data-name (push,"ZEROPAGE")
 unsigned char zR2012, zR2013, zR2014, zR2015, zR2016, zR2017, zR2018, zR201A;
 unsigned char zR4100, zR4105, zR4106, zR4107, zR4108, zR4109, zR410A, zR410B;
+unsigned char zR4118;
 unsigned char zRvct_L, zRvct_H;
 #pragma data-name (pop)
 #pragma bss-name (pop)
@@ -20,7 +21,7 @@ const char menuTitle[] = "G5 500-IN-1";
 const char menuTitle[] = "SUP 400-IN-1";
 #endif
 const char menuTitleHeader[] = "2020-2026 YH WORKSHOP";
-const char menuVersion[] = "1.1";
+const char menuVersion[] = "1.2";
 
 void __fastcall__ loadMenuPalette();
 
@@ -178,6 +179,13 @@ int main (void)
                         
                         zR4100 = (menuItemProperties[menuSelect])[8];
                         zR4105 = (menuItemProperties[menuSelect])[9];
+                        if(zR4105 & 0x01) {
+                            zR4105 = zR4105 & 0xFE;
+                            zR4118 = 0x80;
+                        }
+                        else {
+                            zR4118 = 0x00;
+                        }
                         zR4106 = (menuItemProperties[menuSelect])[10];
                         zR4107 = (menuItemProperties[menuSelect])[11];
                         zR4108 = (menuItemProperties[menuSelect])[12];
@@ -230,7 +238,7 @@ int main (void)
                     enableRender();
                     button1PressEvt = 0;
                     isAboutScreen = 1;
-                }
+                }                
             }
         }
     }
@@ -269,7 +277,7 @@ void __fastcall__ drawMenuPage(unsigned char aMenuPage)
     }
 
     sprintf(text1, menuVersion);
-    printText(0x23BD, text1);
+    printText(0x23BD-2, text1);
 }
 
 void __fastcall__ loadMenuPalette()
