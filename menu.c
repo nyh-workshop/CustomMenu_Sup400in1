@@ -14,6 +14,8 @@ unsigned char zRvct_L, zRvct_H;
 #pragma data-name (pop)
 #pragma bss-name (pop)
 
+unsigned char tft_init_vars[16];
+
 // Texts for menu:
 #if defined(G5_NO_SWAP_DATA_BITS_SWAP_OPCODE_BITS_6_7_1_2)
 const char menuTitle[] = "G5 500-IN-1";
@@ -21,7 +23,7 @@ const char menuTitle[] = "G5 500-IN-1";
 const char menuTitle[] = "SUP 400-IN-1";
 #endif
 const char menuTitleHeader[] = "2020-2026 YH WORKSHOP";
-const char menuVersion[] = "1.2";
+const char menuVersion[] = "1.3";
 
 void __fastcall__ loadMenuPalette();
 
@@ -55,8 +57,25 @@ const unsigned char menuPaletteData[] =
 char text1[64];
 unsigned char i = 0;
 
+// This is the "Type 3" TFT init that is described in the ROM dump analysis:
+// https://nyh-workshop.github.io/Custom-ROM-Sup-Game-Box-400in1/ROM_dump_analysis
+// Might not work for other types, or ones that doesn't keep these TFT init values in
+// 0x110~0x116 and 0xF8 + 0xF9.
+void get_tft_init_values()
+{
+    tft_init_vars[0] = *((unsigned char*)0x0480);
+    tft_init_vars[1] = *((unsigned char*)0x0481);
+    tft_init_vars[2] = *((unsigned char*)0x0482);
+    tft_init_vars[4] = *((unsigned char*)0x0484);
+    tft_init_vars[6] = *((unsigned char*)0x0486);
+    tft_init_vars[8] = *((unsigned char*)0x0488);
+    tft_init_vars[9] = *((unsigned char*)0x0489);
+}
+
 int main (void)
 {
+    get_tft_init_values();
+
     waitvsync();
     waitvsync();
     waitvsync();
@@ -231,9 +250,17 @@ int main (void)
                     printText(0x2182, text1);
                     sprintf(text1, opcodeBitswap);
                     printText(0x2192, text1);
+
+                    // For Type 3, TFT init possibly uses 0x110,0x111,0x112,0x114,0x116,0x0F8 and 0x0F9!
+                    sprintf(text1, "TFT DEBUG:");
+                    printText(0x21C2, text1);
+                    sprintf(text1, "%02X %02X %02X %02X", tft_init_vars[0], tft_init_vars[1], tft_init_vars[2], tft_init_vars[4]);
+                    printText(0x21CD, text1);
+                    sprintf(text1, "%02X %02X %02X", tft_init_vars[6], tft_init_vars[8], tft_init_vars[9]);
+                    printText(0x220D, text1);
                     
                     sprintf(text1, "PRESS RESET TO RETURN TO MENU");
-                    printText(0x2201, text1);
+                    printText(0x2281, text1);
                     
                     enableRender();
                     button1PressEvt = 0;

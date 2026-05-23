@@ -17,21 +17,39 @@
 
 .segment "STARTUP"
 
+; This is to help locate the part of the code easily in hex editors.
+.asciiz "crt0.s"
+
 _init: 
         ; disable interrupts on APU:
         lda #$40
         sta $4017
         lda #$00
-        sta $4010  
-        
-        clear_ZP_RAM:    
+        sta $4010
+
+        ; backup whatever saved during TFT init to another empty area in RAM!
+        tft_init_vars_backup:
+            tax
+        @l0:
+            lda $110, x
+            sta $480, x
+            inx
+            cpx #$8
+            bne @l0
+            lda $0f8
+            sta $488
+            lda $0f9
+            sta $489
+
+        clear_ZP_RAM:
+            lda #$00
             tax
         @l0:
             sta $000,x
             sta $100,x
             sta $200,x
             sta $300,x
-            sta $400,x
+            ; sta $400,x
             sta $500,x
             sta $600,x
             sta $700,x

@@ -2,7 +2,7 @@
 #define MENU_H
 
 // Jump to app debug:
-#define JUMP_TO_APP_DEBUG
+// #define JUMP_TO_APP_DEBUG
 
 // Menu defines:
 #define RIGHT_ARROW_TILE 0x5B
